@@ -1,58 +1,65 @@
-package com.example.sideeffects
-
-import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.delay
-
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @Composable
-fun RememberUpdatedState() {
-    val color = remember {
-        mutableStateOf("none")
+fun FormScreen() {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    // Define the submission function as a lambda
+    val submit: () -> Unit = {
+        // Simulate form submission
+        println("Submitting form with username: $username, password: $password")
     }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column {
-            Button(onClick = {
-                Log.d("TAG", "RememberUpdatedState: Red")
-                color.value = "Red"
-            }) {
-                Text(text = "Red")
-            }
-            Button(onClick = {
-                Log.d("TAG", "RememberUpdatedState: Blue")
-                color.value = "Blue"
-            }) {
+    suspend fun test(){
 
-                Text(text = "Blue")
+    }
+
+    // Remember the updated state of the submit function
+    val currentSubmitFunction by rememberUpdatedState(submit)
+
+    Surface(color = MaterialTheme.colorScheme.primary) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Username input field
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Password input field
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Submit button
+            Button(onClick = {
+                // Call the current version of the submit function
+                currentSubmitFunction()
+                submit()
+            }) {
+                Text("Submit")
             }
         }
     }
-    Timer(color = color.value)
-}
-
-@Composable
-fun Timer(color: String) {
-
-    val colors = rememberUpdatedState(newValue = color)
-
-    LaunchedEffect(key1 = Unit, block = {
-        delay(4000)
-        Log.d("TAG", "Timer: ${colors.value}")
-    })
-    Log.d("TAGOUTSIDWE", "Timer: ${colors.value}")
-
 }
